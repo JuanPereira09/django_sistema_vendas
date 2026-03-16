@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Chart.js pode ficar no head, mas a execução deve ser no fim -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-light">
+
+<div class="container mt-5">
+    <h1 class="mb-4">📊 Dashboard</h1>
+
+    <div class="row">
+        <!-- Cards de Métricas -->
+        <div class="col-md-6">
+            <div class="card shadow mb-4">
+                <div class="card-body">
+                    <h5>Total vendido no mês</h5>
+                    <h3 class="text-success">R$ {{ total_mes }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card shadow mb-4">
+                <div class="card-body">
+                    <h5>Faturamento total</h5>
+                    <h3 class="text-primary">R$ {{ faturamento_total }}</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Gráfico -->
+        <div class="col-md-12 mb-4">
+            <div class="card shadow p-4">
+                <h4>Vendas por Mês</h4>
+                <canvas id="graficoVendas"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Destaques -->
+        <div class="col-md-6">
+            <div class="card shadow mb-4">
+                <div class="card-body">
+                    <h5>Produto mais vendido</h5>
+                    {% if produto_mais_vendido %}
+                        <p>
+                            {{ produto_mais_vendido.produto__nome }} <br>
+                            <strong>{{ produto_mais_vendido.total_vendido }} unidades</strong>
+                        </p>
+                    {% else %}
+                        <p>Nenhuma venda ainda</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card shadow mb-4">
+                <div class="card-body">
+                    <h5>Cliente que mais comprou</h5>
+                    {% if cliente_mais_comprou %}
+                        <p>
+                            {{ cliente_mais_comprou.nome }} <br>
+                            <strong>R$ {{ cliente_mais_comprou.total_compras|default:0 }}</strong>
+                        </p>
+                    {% else %}
+                        <p>Nenhum cliente ainda</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Scripts no final do body -->
+<script>
+    const ctx = document.getElementById('graficoVendas');
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: {{ labels|safe }},
+            datasets: [{
+                label: 'Faturamento',
+                data: {{ dados|safe }},
+                backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: { beginAtZero: true }
+            }
+        }
+    });
+</script>
+</body>
+</html>
